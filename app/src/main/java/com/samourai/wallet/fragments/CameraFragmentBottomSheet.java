@@ -1,19 +1,14 @@
 package com.samourai.wallet.fragments;
 
+import static com.samourai.wallet.permissions.PermissionsUtil.CAMERA_PERMISSION_CODE;
+
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import com.budiyev.android.codescanner.CodeScanner;
-import com.budiyev.android.codescanner.CodeScannerView;
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
-import com.google.android.material.card.MaterialCardView;
-import com.google.android.material.transition.MaterialSharedAxis;
-import com.samourai.wallet.R;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,30 +17,30 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.transition.TransitionManager;
 
-import static com.samourai.wallet.permissions.PermissionsUtil.CAMERA_PERMISSION_CODE;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.transition.MaterialSharedAxis;
+import com.invertedx.hummingbird.QRScanner;
+import com.samourai.wallet.R;
+import com.sparrowwallet.hummingbird.registry.RegistryType;
+
+import org.spongycastle.util.encoders.Hex;
+
+import kotlin.Unit;
 
 
 public class CameraFragmentBottomSheet extends BottomSheetDialogFragment {
-    private CodeScanner mCodeScanner;
 
     private ListenQRScan listenQRScan;
     private MaterialCardView permissionView;
-    private CodeScannerView scannerView;
+    private QRScanner scannerView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.bottomsheet_camera, null);
         permissionView = view.findViewById(R.id.permissionCameraDialog);
         scannerView = view.findViewById(R.id.scanner_view);
-        mCodeScanner = new CodeScanner(getActivity().getApplicationContext(), scannerView);
-        mCodeScanner.setAutoFocusEnabled(true);
-        mCodeScanner.setDecodeCallback(result -> getActivity().runOnUiThread(() -> {
-            if (this.listenQRScan != null) {
-                this.listenQRScan.onDetect(result.getText());
-            }
-        }));
-
-        scannerView.setOnClickListener(view1 -> mCodeScanner.startPreview());
         permissionView.findViewById(R.id.permissionCameraDialogGrantBtn).setOnClickListener(v -> {
             if (ContextCompat.checkSelfPermission(
                     requireContext(),
@@ -60,7 +55,33 @@ public class CameraFragmentBottomSheet extends BottomSheetDialogFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        scannerView.setQRDecodeListener(resultString -> {
+            getActivity().runOnUiThread(() -> {
+                if (this.listenQRScan != null) {
+                    this.listenQRScan.onDetect(resultString);
+                }
+            });
+            return Unit.INSTANCE;
+        });
+        scannerView.setURDecodeListener((bytes, type) -> {
+            if (type == RegistryType.CRYPTO_PSBT) {
+                getActivity().runOnUiThread(() -> {
+                    if (this.listenQRScan != null) {
+                        this.listenQRScan.onDetect(Hex.toHexString(bytes));
+                        scannerView.stopScanner();
+                    }
+                });
+            } else {
+                getActivity().runOnUiThread(() -> {
+                    if (this.listenQRScan != null) {
+                        this.listenQRScan.onDetect("");
+                        scannerView.stopScanner();
+                    }
+                });
+            }
 
+            return Unit.INSTANCE;
+        });
     }
 
     @Override
@@ -80,7 +101,7 @@ public class CameraFragmentBottomSheet extends BottomSheetDialogFragment {
                 requireContext(),
                 Manifest.permission.CAMERA
         ) == PackageManager.PERMISSION_GRANTED) {
-            mCodeScanner.startPreview();
+            scannerView.startScanner();
             showPermissionView(false);
         } else {
             showPermissionView(true);
@@ -107,13 +128,13 @@ public class CameraFragmentBottomSheet extends BottomSheetDialogFragment {
 
     @Override
     public void onPause() {
-        mCodeScanner.releaseResources();
+        scannerView.stopScanner();
         super.onPause();
     }
 
     @Override
     public void onDestroy() {
-        mCodeScanner.releaseResources();
+        scannerView.stopScanner();
         super.onDestroy();
     }
 
