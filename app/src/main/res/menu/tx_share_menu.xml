@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/menu_share_as_text"
+        android:title="Share as text" />
+
+    <item android:id="@+id/menu_save_as_tx_file"
+        android:title="Save as tx file" />
+
+
+</menu>

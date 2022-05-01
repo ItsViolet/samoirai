@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".psbt.PSBTActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/psbtToolBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+    </androidx.appcompat.widget.Toolbar>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/signTx"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:padding="14dp"
+        android:text="@string/psbt_sign_tx"
+        android:textColor="@color/white"
+        app:backgroundTint="@color/grey_accent"
+        app:cornerRadius="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline15"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txScroll" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline15"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.33" />
+
+    <TextView
+        android:id="@+id/txTitle"
+        style="@style/TextAppearance.MaterialComponents.Headline6"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:textSize="14sp"
+        android:text="Unsigned Transaction "
+        app:layout_constraintBottom_toTopOf="@+id/signTx"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/psbtToolBar"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/txScroll"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        android:fillViewport="true"
+        app:cardCornerRadius="4dp"
+        app:cardElevation="4dp"
+        app:layout_constraintBottom_toTopOf="@+id/signTx"
+        app:layout_constraintEnd_toEndOf="@+id/txTitle"
+        app:layout_constraintStart_toStartOf="@+id/txTitle"
+        app:layout_constraintTop_toBottomOf="@+id/txTitle"
+        app:layout_constraintVertical_bias="0.0">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true"
+            android:padding="2dp">
+
+            <TextView
+                android:id="@+id/psbtPreview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:text="70736274ff01007101000000012426b6c5ea647549f11ca009698319faf9b74f799dfadafd1e705be55f4b86110100000000ffffffff02412b00000000000016001409674c52a7802ebf1a9d74990145d49fa8472783400d030000000000160014edc044f1f3bec76482597e091e6e687a4aa25683000000000001011f643903000000000016001489c2d9b1b4ffdddabde13a5df4c18f6337426e7a22060308f80afafa3842d4f46b6874b245adec7baa2a5699690268253e641e4f600d37180d8c85ab540000806201008000000080010000006201000000220203fe38ba76583ed86959f53cadc598971ed5ce610dcd2ea79dc9adb1c784d20b3f180d8c85ab540000800100008000000080010000007a0100000000" />
+
+
+        </ScrollView>
+
+    </androidx.cardview.widget.CardView>
+
+    <com.invertedx.hummingbird.URQRView
+        android:id="@+id/qrView"
+        android:layout_width="260dp"
+        android:layout_height="260dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/signTx"
+        app:layout_constraintVertical_bias="0.0"
+        tools:src="@tools:sample/avatars" />
+
+
+    <TextView
+        android:id="@+id/txPreview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:maxLines="1"
+        android:textSize="11sp"
+        app:layout_constraintEnd_toEndOf="@+id/qrView"
+        app:layout_constraintStart_toStartOf="@+id/qrView"
+        app:layout_constraintTop_toBottomOf="@+id/qrView"
+        tools:text="70736274ff01007101000000012426b6c5ea647549f11ca009698319faf9b74f799dfadafd1e705be55f4b86110100000000ffffffff02412b00000000000016001409674c52a7802ebf1a9d74990145d49fa8472783400d030000000000160014edc044f1f3bec76482597e091e6e687a4aa25683000000000001011f643903000000000016001489c2d9b1b4ffdddabde13a5df4c18f6337426e7a22060308f80afafa3842d4f46b6874b245adec7baa2a5699690268253e641e4f600d37180d8c85ab540000806201008000000080010000006201000000220203fe38ba76583ed86959f53cadc598971ed5ce610dcd2ea79dc9adb1c784d20b3f180d8c85ab540000800100008000000080010000007a0100000000" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/txShareBtn"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:text="Share"
+        android:textColor="@color/text_primary"
+        app:backgroundTint="@color/grey_accent"
+        app:cornerRadius="8dp"
+        app:iconTint="@color/white"
+        app:layout_constraintBottom_toBottomOf="@+id/txCopy"
+        app:layout_constraintEnd_toEndOf="@+id/broadCastTransactionBtn"
+        app:layout_constraintStart_toStartOf="@+id/guideline42"
+        app:layout_constraintTop_toTopOf="@+id/txCopy" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/txCopy"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:elevation="0dp"
+        android:text="Copy"
+        android:textColor="@color/text_primary"
+        app:backgroundTint="@color/grey_accent"
+        app:cornerRadius="8dp"
+        app:iconTint="@color/white"
+        app:layout_constraintEnd_toStartOf="@+id/guideline42"
+        app:layout_constraintStart_toStartOf="@+id/broadCastTransactionBtn"
+        app:layout_constraintTop_toBottomOf="@+id/txPreview" />
+
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/broadcastProgress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:visibility="gone"
+        app:indicatorColor="@color/white"
+        app:indicatorSize="28dp"
+        android:elevation="12dp"
+        app:layout_constraintBottom_toBottomOf="@+id/broadCastTransactionBtn"
+        app:layout_constraintEnd_toEndOf="@+id/broadCastTransactionBtn"
+        app:layout_constraintStart_toStartOf="@+id/broadCastTransactionBtn"
+        app:layout_constraintTop_toTopOf="@+id/broadCastTransactionBtn" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/broadCastTransactionBtn"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:elevation="0dp"
+        android:padding="14dp"
+        android:text="Broadcast Transaction"
+        android:textColor="@color/text_primary"
+        app:backgroundTint="@color/grey_accent"
+        app:cornerRadius="8dp"
+        app:iconTint="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txCopy"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline42"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/psbtGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="signTx,txScroll" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/txGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:constraint_referenced_ids="qrView,txPreview,txShareBtn,broadCastTransactionBtn,txCopy"
+        tools:visibility="visible" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

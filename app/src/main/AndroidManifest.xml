@@ -17,6 +17,7 @@
     <uses-permission
         android:name="android.permission.WAKE_LOCK"
         tools:node="replace" />
+
     <uses-feature
         android:name="android.hardware.camera.autofocus"
         android:required="false"
@@ -190,7 +191,11 @@
             android:name=".send.soroban.meeting.SorobanMeetingSendActivity"
             android:label="Send online Cahoots"
             android:theme="@style/Theme.Samourai.Material" />
-
+        <activity
+            android:name=".psbt.PSBTActivity"
+            android:exported="false"
+            android:colorMode="hdr"
+            android:theme="@style/Theme.Samourai.Material" />
         <provider
             android:name=".util.GenericFileProvider"
             android:authorities="${applicationId}.provider"
