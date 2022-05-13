@@ -36,10 +36,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
+import java.util.Optional;
 
 import io.reactivex.Completable;
 import io.reactivex.subjects.BehaviorSubject;
-import java8.util.Optional;
 
 public class AndroidWhirlpoolWalletService extends WhirlpoolWalletService {
     private static final Logger LOG = LoggerFactory.getLogger(AndroidWhirlpoolWalletService.class);

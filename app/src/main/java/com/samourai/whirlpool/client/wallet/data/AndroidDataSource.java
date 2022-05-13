@@ -2,15 +2,16 @@ package com.samourai.whirlpool.client.wallet.data;
 
 import com.samourai.wallet.api.APIFactory;
 import com.samourai.wallet.api.backend.BackendApi;
-import com.samourai.wallet.api.backend.beans.PushTxResponse;
 import com.samourai.wallet.bip47.BIP47Meta;
 import com.samourai.wallet.bip47.BIP47Util;
+import com.samourai.wallet.bipWallet.WalletSupplier;
+import com.samourai.wallet.bipWallet.WalletSupplierImpl;
 import com.samourai.wallet.hd.HD_Wallet;
 import com.samourai.wallet.send.FeeUtil;
 import com.samourai.wallet.send.PushTx;
 import com.samourai.wallet.send.UTXOFactory;
 import com.samourai.wallet.util.JSONUtils;
-import com.samourai.whirlpool.client.tx0.Tx0ParamService;
+import com.samourai.whirlpool.client.tx0.Tx0PreviewService;
 import com.samourai.whirlpool.client.wallet.WhirlpoolWallet;
 import com.samourai.whirlpool.client.wallet.WhirlpoolWalletConfig;
 import com.samourai.whirlpool.client.wallet.data.chain.ChainSupplier;
@@ -18,13 +19,13 @@ import com.samourai.whirlpool.client.wallet.data.dataPersister.DataPersister;
 import com.samourai.whirlpool.client.wallet.data.dataSource.DataSource;
 import com.samourai.whirlpool.client.wallet.data.dataSource.DataSourceWithStrictMode;
 import com.samourai.whirlpool.client.wallet.data.minerFee.MinerFeeSupplier;
+import com.samourai.whirlpool.client.wallet.data.paynym.PaynymSupplier;
 import com.samourai.whirlpool.client.wallet.data.pool.ExpirablePoolSupplier;
 import com.samourai.whirlpool.client.wallet.data.pool.PoolSupplier;
 import com.samourai.whirlpool.client.wallet.data.utxo.UtxoSupplier;
-import com.samourai.whirlpool.client.wallet.data.wallet.WalletSupplier;
-import com.samourai.whirlpool.client.wallet.data.wallet.WalletSupplierImpl;
 import com.samourai.whirlpool.client.wallet.data.walletState.WalletStateSupplier;
 
+import java.util.Collection;
 import java.util.List;
 
 public class AndroidDataSource implements DataSource, DataSourceWithStrictMode {
@@ -103,7 +104,17 @@ public class AndroidDataSource implements DataSource, DataSourceWithStrictMode {
     }
 
     @Override
-    public Tx0ParamService getTx0ParamService() {
+    public PaynymSupplier getPaynymSupplier() {
+        return null;
+    }
+
+    @Override
+    public Tx0PreviewService getTx0PreviewService() {
         return tx0ParamService;
+    }
+
+    @Override
+    public String pushTx(String s, Collection<Integer> collection) throws Exception {
+        return null;
     }
 }

@@ -10,7 +10,6 @@ import android.os.Looper
 import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
-import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.WindowManager
@@ -25,6 +24,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.samourai.wallet.*
 import com.samourai.wallet.access.AccessFactory
 import com.samourai.wallet.api.backend.MinerFeeTarget
+import com.samourai.wallet.bipWallet.BipWallet
 import com.samourai.wallet.cahoots.psbt.PSBTUtil
 import com.samourai.wallet.crypto.AESUtil
 import com.samourai.wallet.crypto.DecryptionException
@@ -46,6 +46,7 @@ import com.samourai.wallet.whirlpool.WhirlpoolMeta
 import com.samourai.wallet.whirlpool.service.WhirlpoolNotificationService
 import com.samourai.whirlpool.client.utils.ClientUtils
 import com.samourai.whirlpool.client.wallet.AndroidWhirlpoolWalletService
+import com.samourai.whirlpool.client.wallet.beans.SamouraiAccountIndex
 import com.samourai.whirlpool.client.wallet.beans.WhirlpoolAccount
 import com.samourai.whirlpool.client.wallet.beans.WhirlpoolUtxo
 import io.matthewnelson.topl_service.TorServiceController
@@ -527,7 +528,7 @@ class SettingsDetailsFragment(private val key: String?) : PreferenceFragmentComp
         }
 
         when (account) {
-            WhirlpoolAccount.POSTMIX.accountIndex -> {
+            SamouraiAccountIndex.POSTMIX -> {
                 if(purpose == 49){
                     dialogTitle = "Whirlpool Post-mix YPUB"
                 }
@@ -538,10 +539,10 @@ class SettingsDetailsFragment(private val key: String?) : PreferenceFragmentComp
                     dialogTitle = "Whirlpool Post-mix ZPUB"
                 }
             }
-            WhirlpoolAccount.PREMIX.accountIndex -> {
+            SamouraiAccountIndex.PREMIX -> {
                 dialogTitle = "Whirlpool Pre-mix ZPUB"
             }
-            WhirlpoolAccount.BADBANK.accountIndex -> {
+            SamouraiAccountIndex.BADBANK -> {
                 dialogTitle = "Whirlpool Bad bank ZPUB"
             }
             else -> dialogTitle
@@ -761,23 +762,23 @@ class SettingsDetailsFragment(private val key: String?) : PreferenceFragmentComp
             builder.append(SEPARATOR)
             builder.append("# WALLETS\n");
             for (account in WhirlpoolAccount.values()) {
-                for (addressType in account.getAddressTypes()) {
-                    builder.append("- WALLET[$account][$addressType]:\n");
-                    val wallet = walletSupplier.getWallet(account, addressType);
+                val bipWallets: Collection<BipWallet> = walletSupplier.getWallets(account)
+                for (bipWallet in bipWallets) {
+                    builder.append("- WALLET[$account][${bipWallet.bipFormat}]:\n");
+                    val wallet = walletSupplier.getWallet(account, bipWallet.bipFormat);
                     builder.append("pub = "+wallet.pub+"\n");
 
                     for (chain in Chain.values()) {
                         var indexHandler =
                             whirlpoolWallet.walletStateSupplier.getIndexHandlerWallet(
-                                account,
-                                addressType,
+                                bipWallet,
                                 chain
                             );
                         var index = indexHandler.get();
                         builder.append(""+chain+"_INDEX = "+index+"\n");
                     }
 
-                    val utxos = whirlpoolWallet.utxoSupplier.findUtxos(addressType, account)
+                    val utxos = whirlpoolWallet.utxoSupplier.findUtxos(account)
                     builder.append(""+utxos.size+" utxos\n");
                     builder.append("\n")
                 }
@@ -804,9 +805,10 @@ class SettingsDetailsFragment(private val key: String?) : PreferenceFragmentComp
             builder.append(SEPARATOR)
             builder.append("# UTXOS\n");
             for (account in WhirlpoolAccount.values()) {
-                for (addressType in account.getAddressTypes()) {
-                    val utxos = whirlpoolWallet.utxoSupplier.findUtxos(addressType, account)
-                    builder.append("- UTXOS[$account][$addressType] (" + utxos.size + "):\n");
+                val bipWallets: Collection<BipWallet> = walletSupplier.getWallets(account)
+                for (bipWallet in bipWallets) {
+                    val utxos = whirlpoolWallet.utxoSupplier.findUtxos(bipWallet.bipFormat, account)
+                    builder.append("- UTXOS[$account][${bipWallet.bipFormat}] (" + utxos.size + "):\n");
 
                     for (whirlpoolUtxo in utxos) {
                         builder.append("* ").append(

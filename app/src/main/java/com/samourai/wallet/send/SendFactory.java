@@ -12,9 +12,11 @@ import com.samourai.wallet.bip47.BIP47Util;
 import com.samourai.wallet.bip47.rpc.PaymentAddress;
 import com.samourai.wallet.bip47.rpc.PaymentCode;
 import com.samourai.wallet.bip69.BIP69OutputComparator;
-import com.samourai.wallet.hd.AddressType;
+import com.samourai.wallet.bipFormat.BIP_FORMAT;
+import com.samourai.wallet.bipFormat.BipFormat;
+import com.samourai.wallet.bipFormat.BipFormatImpl;
+import com.samourai.wallet.bipWallet.BipWallet;
 import com.samourai.wallet.hd.HD_Address;
-import com.samourai.wallet.hd.HD_WalletFactory;
 import com.samourai.wallet.hd.WALLET_INDEX;
 import com.samourai.wallet.network.dojo.DojoUtil;
 import com.samourai.wallet.segwit.BIP49Util;
@@ -711,13 +713,13 @@ public class SendFactory	{
 
         if(account == WhirlpoolMeta.getInstance(context).getWhirlpoolPostmix())    {
             // POSTMIX
-            AddressType forcedAddressType = AddressType.SEGWIT_NATIVE;
+            BipFormat forcedAddressType = BIP_FORMAT.SEGWIT_NATIVE;
             if((type == 44 || type == 49) && useLikeType)    {
                 if(type == 49)    {
-                    forcedAddressType = AddressType.SEGWIT_COMPAT;
+                    forcedAddressType = BIP_FORMAT.SEGWIT_COMPAT;
                 }
                 else {
-                    forcedAddressType = AddressType.LEGACY;
+                    forcedAddressType = BIP_FORMAT.LEGACY;
                 }
             }
             // get & increment

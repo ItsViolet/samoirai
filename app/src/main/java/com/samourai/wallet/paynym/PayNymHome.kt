@@ -136,11 +136,11 @@ class PayNymHome : SamouraiActivity() {
             payNymViewModel.refreshPayNym()
         }
         payNymViewModel.refreshTaskProgressLiveData.observe(this, {
-            if (it.first != 0 || it.second != 0) {
-                paynymSync?.setProgressCompat(it.first,true);
-                paynymSync?.max = it.second
+            if (it.left != 0 || it.right != 0) {
+                paynymSync?.setProgressCompat(it.left,true);
+                paynymSync?.max = it.right
                 pcodeSyncLayout?.visibility = View.VISIBLE
-                paymentCodeSyncMessage?.text = this.getString(R.string.sycing_pcodes) + " " + paynymSync!!.progress.toString() + "/" + it.second.toString()
+                paymentCodeSyncMessage?.text = this.getString(R.string.sycing_pcodes) + " " + paynymSync!!.progress.toString() + "/" + it.right.toString()
                 if (paynymSync?.progress == paynymSync?.max) {
                     pcodeSyncLayout?.visibility = View.GONE
                     Snackbar.make(pcodeSyncLayout!!.rootView, this.getString(R.string.sync_complete), Snackbar.LENGTH_SHORT).show()
