@@ -2,10 +2,14 @@ package com.samourai.whirlpool.client.wallet.data;
 
 import com.samourai.wallet.api.APIFactory;
 import com.samourai.wallet.api.backend.BackendApi;
+import com.samourai.wallet.api.backend.beans.BackendPushTxResponse;
 import com.samourai.wallet.bip47.BIP47Meta;
 import com.samourai.wallet.bip47.BIP47Util;
+import com.samourai.wallet.bipFormat.BipFormatSupplier;
+import com.samourai.wallet.bipFormat.BipFormatSupplierImpl;
 import com.samourai.wallet.bipWallet.WalletSupplier;
 import com.samourai.wallet.bipWallet.WalletSupplierImpl;
+import com.samourai.wallet.client.indexHandler.IndexHandlerSupplier;
 import com.samourai.wallet.hd.HD_Wallet;
 import com.samourai.wallet.send.FeeUtil;
 import com.samourai.wallet.send.PushTx;
@@ -24,7 +28,9 @@ import com.samourai.whirlpool.client.wallet.data.pool.ExpirablePoolSupplier;
 import com.samourai.whirlpool.client.wallet.data.pool.PoolSupplier;
 import com.samourai.whirlpool.client.wallet.data.utxo.UtxoSupplier;
 import com.samourai.whirlpool.client.wallet.data.walletState.WalletStateSupplier;
+import com.samourai.whirlpool.protocol.rest.PushTxSuccessResponse;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -34,20 +40,20 @@ public class AndroidDataSource implements DataSource, DataSourceWithStrictMode {
     protected WalletSupplier walletSupplier;
     protected MinerFeeSupplier minerFeeSupplier;
     protected ChainSupplier chainSupplier;
-    protected Tx0ParamService tx0ParamService;
+    protected Tx0PreviewService tx0ParamService;
     protected ExpirablePoolSupplier poolSupplier;
     protected UtxoSupplier utxoSupplier;
 
-    public AndroidDataSource(WhirlpoolWallet whirlpoolWallet, HD_Wallet bip44w, DataPersister dataPersister, PushTx pushTx, FeeUtil feeUtil, APIFactory apiFactory, UTXOFactory utxoFactory, BIP47Util bip47Util, BIP47Meta bip47Meta) throws Exception {
+    public AndroidDataSource(WhirlpoolWallet whirlpoolWallet, HD_Wallet bip44w, PushTx pushTx, FeeUtil feeUtil, APIFactory apiFactory, UTXOFactory utxoFactory, BIP47Util bip47Util, BIP47Meta bip47Meta) throws Exception {
         this.pushTx = pushTx;
-        WalletStateSupplier walletStateSupplier = dataPersister.getWalletStateSupplier();
-        this.walletSupplier = new WalletSupplierImpl(bip44w, walletStateSupplier);
+        WalletStateSupplier walletStateSupplier = whirlpoolWallet.getWalletStateSupplier();
+        BipFormatSupplier bipFormatSupplier = new BipFormatSupplierImpl();
+        this.walletSupplier = new WalletSupplierImpl(walletStateSupplier, bip44w);
         this.minerFeeSupplier = computeMinerFeeSupplier(feeUtil);
         this.chainSupplier = new AndroidChainSupplier(apiFactory);
-        WhirlpoolWalletConfig config = whirlpoolWallet.getConfig();
-        this.tx0ParamService = new Tx0ParamService(minerFeeSupplier, config);
-        this.poolSupplier = new ExpirablePoolSupplier(config.getRefreshPoolsDelay(), config.getServerApi(), tx0ParamService);
-        this.utxoSupplier = new AndroidUtxoSupplier(walletSupplier, dataPersister.getUtxoConfigSupplier(), chainSupplier, poolSupplier, tx0ParamService, config.getNetworkParameters(), utxoFactory, bip47Util, bip47Meta);
+        this.tx0ParamService = new Tx0PreviewService(minerFeeSupplier, whirlpoolWallet.getConfig());
+        this.poolSupplier = new ExpirablePoolSupplier(whirlpoolWallet.getConfig().getRefreshPoolsDelay(), whirlpoolWallet.getConfig().getServerApi(), tx0ParamService);
+        this.utxoSupplier = new AndroidUtxoSupplier(walletSupplier, whirlpoolWallet.getUtxoConfigSupplier(), chainSupplier, poolSupplier, bipFormatSupplier, utxoFactory, bip47Util, bip47Meta);
     }
 
     protected MinerFeeSupplier computeMinerFeeSupplier(FeeUtil feeUtil) {
@@ -65,17 +71,8 @@ public class AndroidDataSource implements DataSource, DataSourceWithStrictMode {
     }
 
     @Override
-    public void pushTx(String txHex) throws Exception {
-        pushTx.pushTx(txHex);
-    }
-
-    @Override
-    public void pushTx(String txHex, List<Integer> strictModeVouts) throws Exception {
-        String response = pushTx.samourai(txHex, strictModeVouts);
-
-        // check strict-mode response
-        PushTxResponse pushTxResponse = JSONUtils.getInstance().getObjectMapper().readValue(response, PushTxResponse.class);
-        BackendApi.checkPushTxResponse(pushTxResponse);
+    public String pushTx(String s) throws Exception {
+        return pushTx.samourai(s, new ArrayList<>());
     }
 
     @Override
@@ -114,7 +111,13 @@ public class AndroidDataSource implements DataSource, DataSourceWithStrictMode {
     }
 
     @Override
-    public String pushTx(String s, Collection<Integer> collection) throws Exception {
-        return null;
+    public String pushTx(String txHex, Collection<Integer> collection) throws Exception {
+        List<Integer> strictModeVouts = new ArrayList<>(collection);
+        String response = pushTx.samourai(txHex, strictModeVouts);
+
+        // check strict-mode response
+        BackendPushTxResponse pushTxResponse = JSONUtils.getInstance().getObjectMapper().readValue(response, BackendPushTxResponse.class);
+        BackendApi.checkPushTxResponse(pushTxResponse);
+        return response;
     }
 }

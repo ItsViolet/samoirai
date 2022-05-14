@@ -3,6 +3,7 @@ package com.samourai.wallet.whirlpool;
 import android.content.Context;
 
 import com.samourai.wallet.SamouraiWallet;
+import com.samourai.whirlpool.client.wallet.beans.SamouraiAccountIndex;
 import com.samourai.whirlpool.client.wallet.beans.WhirlpoolAccount;
 
 import org.json.JSONException;
@@ -32,15 +33,15 @@ public class WhirlpoolMeta {
     }
 
     public int getWhirlpoolPremixAccount() {
-        return WhirlpoolAccount.PREMIX.getAccountIndex();
+        return SamouraiAccountIndex.PREMIX;
     }
 
     public int getWhirlpoolPostmix() {
-        return WhirlpoolAccount.POSTMIX.getAccountIndex();
+        return SamouraiAccountIndex.POSTMIX;
     }
 
     public int getWhirlpoolBadBank() {
-        return WhirlpoolAccount.BADBANK.getAccountIndex();
+        return SamouraiAccountIndex.BADBANK;
     }
 
     public static long getMinimumPoolDenomination() {

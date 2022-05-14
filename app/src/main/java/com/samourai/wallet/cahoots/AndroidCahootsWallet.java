@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.samourai.wallet.SamouraiWallet;
 import com.samourai.wallet.api.APIFactory;
+import com.samourai.wallet.bipWallet.BipWallet;
 import com.samourai.wallet.hd.WALLET_INDEX;
 import com.samourai.wallet.segwit.BIP84Util;
 import com.samourai.wallet.send.FeeUtil;
@@ -11,6 +12,8 @@ import com.samourai.wallet.send.MyTransactionOutPoint;
 import com.samourai.wallet.send.SendFactory;
 import com.samourai.wallet.send.UTXO;
 import com.samourai.wallet.util.AddressFactory;
+import com.samourai.whirlpool.client.wallet.AndroidWhirlpoolWalletService;
+import com.samourai.whirlpool.client.wallet.beans.SamouraiAccountIndex;
 import com.samourai.whirlpool.client.wallet.beans.WhirlpoolAccount;
 
 import org.bitcoinj.core.ECKey;
@@ -23,7 +26,7 @@ public class AndroidCahootsWallet extends CahootsWallet {
     private AddressFactory addressFactory;
 
     public AndroidCahootsWallet(Context ctx) {
-        super(BIP84Util.getInstance(ctx).getWallet(), SamouraiWallet.getInstance().getCurrentNetworkParams());
+        super(AndroidWhirlpoolWalletService.getInstance().whirlpoolWallet().getWalletSupplier(), AndroidWhirlpoolWalletService.getInstance().whirlpoolWallet().getUtxoSupplier().getBipFormatSupplier(), SamouraiWallet.getInstance().getCurrentNetworkParams());
         this.apiFactory = APIFactory.getInstance(ctx);
         this.addressFactory = AddressFactory.getInstance(ctx);
     }
@@ -35,14 +38,9 @@ public class AndroidCahootsWallet extends CahootsWallet {
     }
 
     @Override
-    public int fetchPostChangeIndex() {
-        return addressFactory.getIndex(WALLET_INDEX.POSTMIX_CHANGE);
-    }
-
-    @Override
     protected List<CahootsUtxo> fetchUtxos(int account) {
         List<UTXO> apiUtxos;
-        if(account == WhirlpoolAccount.POSTMIX.getAccountIndex())    {
+        if(account == SamouraiAccountIndex.POSTMIX)    {
             apiUtxos = apiFactory.getUtxosPostMix(true);
         }
         else    {

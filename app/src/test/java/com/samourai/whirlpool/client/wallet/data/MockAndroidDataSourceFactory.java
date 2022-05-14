@@ -10,6 +10,8 @@ import com.samourai.wallet.send.UTXOFactory;
 import com.samourai.whirlpool.client.wallet.WhirlpoolWallet;
 import com.samourai.whirlpool.client.wallet.data.dataPersister.DataPersister;
 import com.samourai.whirlpool.client.wallet.data.dataSource.DataSource;
+import com.samourai.whirlpool.client.wallet.data.utxoConfig.UtxoConfigSupplier;
+import com.samourai.whirlpool.client.wallet.data.walletState.WalletStateSupplier;
 
 import util.Log;
 
@@ -20,7 +22,7 @@ public class MockAndroidDataSourceFactory extends AndroidDataSourceFactory {
     }
 
     @Override
-    public DataSource createDataSource(WhirlpoolWallet whirlpoolWallet, HD_Wallet bip44w, DataPersister dataPersister) throws Exception {
-        return new MockAndroidDataSource(whirlpoolWallet, bip44w, dataPersister, pushTx, feeUtil, apiFactory, utxoFactory, bip47Util, bip47Meta);
+    public DataSource createDataSource(WhirlpoolWallet whirlpoolWallet, HD_Wallet hd_wallet, WalletStateSupplier walletStateSupplier, UtxoConfigSupplier utxoConfigSupplier) throws Exception {
+        return new MockAndroidDataSource(whirlpoolWallet, hd_wallet, pushTx, feeUtil, apiFactory, utxoFactory, bip47Util, bip47Meta);
     }
 }

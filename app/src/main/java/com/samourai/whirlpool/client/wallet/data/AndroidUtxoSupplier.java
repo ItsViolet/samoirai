@@ -6,11 +6,14 @@ import com.samourai.wallet.bip47.BIP47Meta;
 import com.samourai.wallet.bip47.BIP47Util;
 import com.samourai.wallet.bip47.rpc.PaymentAddress;
 import com.samourai.wallet.bip47.rpc.PaymentCode;
-import com.samourai.wallet.client.BipWallet;
-import com.samourai.wallet.hd.AddressType;
+import com.samourai.wallet.bipFormat.BIP_FORMAT;
+import com.samourai.wallet.bipFormat.BipFormat;
+import com.samourai.wallet.bipFormat.BipFormatSupplier;
+import com.samourai.wallet.bipWallet.BipWallet;
+import com.samourai.wallet.bipWallet.WalletSupplier;
 import com.samourai.wallet.send.UTXO;
 import com.samourai.wallet.send.UTXOFactory;
-import com.samourai.whirlpool.client.tx0.Tx0ParamService;
+import com.samourai.whirlpool.client.tx0.Tx0PreviewService;
 import com.samourai.whirlpool.client.wallet.beans.WhirlpoolAccount;
 import com.samourai.whirlpool.client.wallet.beans.WhirlpoolUtxo;
 import com.samourai.whirlpool.client.wallet.data.chain.ChainSupplier;
@@ -18,9 +21,7 @@ import com.samourai.whirlpool.client.wallet.data.pool.PoolSupplier;
 import com.samourai.whirlpool.client.wallet.data.utxo.BasicUtxoSupplier;
 import com.samourai.whirlpool.client.wallet.data.utxo.UtxoData;
 import com.samourai.whirlpool.client.wallet.data.utxoConfig.UtxoConfigSupplier;
-import com.samourai.whirlpool.client.wallet.data.wallet.WalletSupplier;
 
-import org.bitcoinj.core.ECKey;
 import org.bitcoinj.core.NetworkParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,12 +42,11 @@ public class AndroidUtxoSupplier extends BasicUtxoSupplier {
                                UtxoConfigSupplier utxoConfigSupplier,
                                ChainSupplier chainSupplier,
                                PoolSupplier poolSupplier,
-                               Tx0ParamService tx0ParamService,
-                               NetworkParameters params,
+                               BipFormatSupplier bipFormatSupplier,
                                UTXOFactory utxoFactory,
                                BIP47Util bip47Util,
                                BIP47Meta bip47Meta) throws Exception {
-        super(walletSupplier, utxoConfigSupplier, chainSupplier, poolSupplier, tx0ParamService, params);
+        super(walletSupplier, utxoConfigSupplier, chainSupplier, poolSupplier, bipFormatSupplier);
         this.utxoFactory = utxoFactory;
         this.bip47Util = bip47Util;
         this.bip47Meta = bip47Meta;
@@ -81,18 +81,18 @@ public class AndroidUtxoSupplier extends BasicUtxoSupplier {
             log.debug("utxoSupplier.computeValue()");
         }
         List<UnspentOutput> utxos = new LinkedList();
-        utxos.addAll(toUnspentOutputs(utxoFactory.getP2PKH().values(), WhirlpoolAccount.DEPOSIT, AddressType.LEGACY));
-        utxos.addAll(toUnspentOutputs(utxoFactory.getP2SH_P2WPKH().values(), WhirlpoolAccount.DEPOSIT, AddressType.SEGWIT_COMPAT));
-        utxos.addAll(toUnspentOutputs(utxoFactory.getP2WPKH().values(), WhirlpoolAccount.DEPOSIT, AddressType.SEGWIT_NATIVE));
-        utxos.addAll(toUnspentOutputs(utxoFactory.getPreMix().values(), WhirlpoolAccount.PREMIX, AddressType.SEGWIT_NATIVE));
-        utxos.addAll(toUnspentOutputs(utxoFactory.getAllPostMix().values(), WhirlpoolAccount.POSTMIX, AddressType.SEGWIT_NATIVE));
+        utxos.addAll(toUnspentOutputs(utxoFactory.getP2PKH().values(), WhirlpoolAccount.DEPOSIT, BIP_FORMAT.LEGACY));
+        utxos.addAll(toUnspentOutputs(utxoFactory.getP2SH_P2WPKH().values(), WhirlpoolAccount.DEPOSIT, BIP_FORMAT.SEGWIT_COMPAT));
+        utxos.addAll(toUnspentOutputs(utxoFactory.getP2WPKH().values(), WhirlpoolAccount.DEPOSIT, BIP_FORMAT.SEGWIT_NATIVE));
+        utxos.addAll(toUnspentOutputs(utxoFactory.getPreMix().values(), WhirlpoolAccount.PREMIX, BIP_FORMAT.SEGWIT_NATIVE));
+        utxos.addAll(toUnspentOutputs(utxoFactory.getAllPostMix().values(), WhirlpoolAccount.POSTMIX, BIP_FORMAT.SEGWIT_NATIVE));
 
         UnspentOutput[] utxosArray = utxos.toArray(new UnspentOutput[]{});
         WalletResponse.Tx[] txs = new WalletResponse.Tx[]{}; // ignored
         return new UtxoData(utxosArray, txs);
     }
 
-    private Collection<UnspentOutput> toUnspentOutputs(Collection<UTXO> utxos, WhirlpoolAccount whirlpoolAccount, AddressType addressType) {
+    private Collection<UnspentOutput> toUnspentOutputs(Collection<UTXO> utxos, WhirlpoolAccount whirlpoolAccount, BipFormat addressType) {
         List<UnspentOutput> unspentOutputs = new LinkedList<>();
 
         BipWallet bipWallet = getWalletSupplier().getWallet(whirlpoolAccount, addressType);
@@ -100,7 +100,7 @@ public class AndroidUtxoSupplier extends BasicUtxoSupplier {
             log.error("Wallet not found for "+whirlpoolAccount+"/"+addressType);
             return unspentOutputs;
         }
-        String xpub = bipWallet.getPub(addressType);
+        String xpub = bipWallet.getPub();
         for (UTXO utxo : utxos) {
             Collection<UnspentOutput> unspents = utxo.toUnspentOutputs(xpub);
             unspentOutputs.addAll(unspents);
@@ -112,7 +112,7 @@ public class AndroidUtxoSupplier extends BasicUtxoSupplier {
     }
 
     @Override
-    public ECKey _getPrivKeyBip47(WhirlpoolUtxo whirlpoolUtxo) throws Exception {
+    public byte[] _getPrivKeyBip47(WhirlpoolUtxo whirlpoolUtxo) throws Exception {
         String address = whirlpoolUtxo.getUtxo().addr;
         String pcode = bip47Meta.getPCode4Addr(address);
         int idx = bip47Meta.getIdx4Addr(address);
@@ -120,6 +120,6 @@ public class AndroidUtxoSupplier extends BasicUtxoSupplier {
             log.debug("_getPrivKeyBip47: pcode="+pcode+", idx="+idx);
         }
         PaymentAddress addr = bip47Util.getReceiveAddress(new PaymentCode(pcode), idx);
-        return addr.getReceiveECKey();
+        return addr.getReceiveECKey().getPrivKeyBytes();
     }
 }
