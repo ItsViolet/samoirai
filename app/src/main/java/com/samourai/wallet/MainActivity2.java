@@ -52,6 +52,7 @@ import org.bitcoinj.params.TestNet3Params;
 
 import io.matthewnelson.topl_service.TorServiceController;
 import io.reactivex.Completable;
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -157,13 +158,15 @@ public class MainActivity2 extends AppCompatActivity {
         DexConfigProvider dexConfigProvider = DexConfigProvider.getInstance();
         IHttpClient httpClient = AndroidHttpClient.getInstance(getApplicationContext());
 
-        try {
-            System.out.println("Lets load the config!");
+        Disposable disposable = Observable.fromCallable(() -> {
             dexConfigProvider.load(httpClient, SamouraiWallet.getInstance().getCurrentNetworkParams());
-            System.out.println("Backend server mainnet clear: " + dexConfigProvider.getSamouraiConfig().getBackendServerMainnetClear());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+            return true;
+        })      .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread()).subscribe((aBoolean) -> {
+                },throwable -> {
+                    LogUtil.error(TAG,throwable);
+                });
+            compositeDisposables.add(disposable);
 
         startApp();
     }
