@@ -24,6 +24,9 @@ import android.widget.Toast;
 
 import com.auth0.android.jwt.JWT;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
+import com.samourai.dex.config.DexConfigProvider;
+import com.samourai.http.client.AndroidHttpClient;
+import com.samourai.http.client.IHttpClient;
 import com.samourai.wallet.access.AccessFactory;
 import com.samourai.wallet.api.APIFactory;
 import com.samourai.wallet.crypto.AESUtil;
@@ -148,6 +151,18 @@ public class MainActivity2 extends AppCompatActivity {
         if (!AppUtil.getInstance(MainActivity2.this).isPRNG_FIXED()) {
             PRNGFixes.apply();
             AppUtil.getInstance(MainActivity2.this).setPRNG_FIXED(true);
+        }
+
+
+        DexConfigProvider dexConfigProvider = DexConfigProvider.getInstance();
+        IHttpClient httpClient = AndroidHttpClient.getInstance(getApplicationContext());
+
+        try {
+            System.out.println("Lets load the config!");
+            dexConfigProvider.load(httpClient, SamouraiWallet.getInstance().getCurrentNetworkParams());
+            System.out.println("Backend server mainnet clear: " + dexConfigProvider.getSamouraiConfig().getBackendServerMainnetClear());
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         startApp();
