@@ -25,8 +25,8 @@ import android.widget.Toast;
 import com.auth0.android.jwt.JWT;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.samourai.dex.config.DexConfigProvider;
-import com.samourai.http.client.AndroidHttpClient;
-import com.samourai.http.client.IHttpClient;
+import com.samourai.http.client.AndroidHttpClientService;
+import com.samourai.http.client.HttpUsage;
 import com.samourai.wallet.access.AccessFactory;
 import com.samourai.wallet.api.APIFactory;
 import com.samourai.wallet.crypto.AESUtil;
@@ -156,10 +156,9 @@ public class MainActivity2 extends AppCompatActivity {
 
 
         DexConfigProvider dexConfigProvider = DexConfigProvider.getInstance();
-        IHttpClient httpClient = AndroidHttpClient.getInstance(getApplicationContext());
 
         Disposable disposable = Observable.fromCallable(() -> {
-            dexConfigProvider.load(httpClient, SamouraiWallet.getInstance().getCurrentNetworkParams());
+            dexConfigProvider.load(AndroidHttpClientService.getInstance(getApplicationContext()).getHttpClient(HttpUsage.BACKEND), SamouraiWallet.getInstance().getCurrentNetworkParams());
             return true;
         })      .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread()).subscribe((aBoolean) -> {
