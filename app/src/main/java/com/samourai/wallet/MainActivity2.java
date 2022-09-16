@@ -67,7 +67,8 @@ public class MainActivity2 extends AppCompatActivity {
     private static final String TAG = "MainActivity2";
     private TextView loaderTxView;
     private LinearProgressIndicator progressIndicator;
-    private CompositeDisposable compositeDisposables = new CompositeDisposable();
+    private final CompositeDisposable compositeDisposables = new CompositeDisposable();
+    private final DexConfigProvider dexConfigProvider = DexConfigProvider.getInstance();
 
     protected BroadcastReceiver receiver_restart = new BroadcastReceiver() {
         @Override
@@ -155,19 +156,15 @@ public class MainActivity2 extends AppCompatActivity {
         }
 
 
-        DexConfigProvider dexConfigProvider = DexConfigProvider.getInstance();
-
-        Disposable disposable = Observable.fromCallable(() -> {
+        Disposable disposable = Completable.fromCallable(() -> {
             dexConfigProvider.load(AndroidHttpClientService.getInstance(getApplicationContext()).getHttpClient(HttpUsage.BACKEND), SamouraiWallet.getInstance().getCurrentNetworkParams());
-            return true;
+                    return true;
         })      .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread()).subscribe((aBoolean) -> {
-                },throwable -> {
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::startApp, throwable -> {
                     LogUtil.error(TAG,throwable);
                 });
             compositeDisposables.add(disposable);
-
-        startApp();
     }
 
     private void startApp() {
