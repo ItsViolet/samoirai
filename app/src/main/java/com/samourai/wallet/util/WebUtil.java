@@ -3,6 +3,7 @@ package com.samourai.wallet.util;
 import android.content.Context;
 import android.util.Log;
 
+import com.samourai.dex.config.DexConfigProvider;
 import com.samourai.wallet.BuildConfig;
 import com.samourai.wallet.SamouraiWallet;
 import com.samourai.wallet.api.backend.beans.HttpException;
@@ -41,13 +42,12 @@ import static com.samourai.wallet.util.LogUtil.info;
 
 public class WebUtil {
 
-    public static final String SAMOURAI_API = "https://api.samouraiwallet.com/";
     public static final String SAMOURAI_API_CHECK = "https://api.samourai.com/v1/status";
-    public static final String SAMOURAI_API2 = "https://api.samouraiwallet.com/v2/";
-    public static final String SAMOURAI_API2_TESTNET = "https://api.samouraiwallet.com/test/v2/";
+    public static final String SAMOURAI_API2 = DexConfigProvider.getInstance().getSamouraiConfig().getBackendServerMainnetClear() + '/';
+    public static final String SAMOURAI_API2_TESTNET = DexConfigProvider.getInstance().getSamouraiConfig().getBackendServerTestnetClear() + '/';
 
-    public static final String SAMOURAI_API2_TOR_DIST = "http://d2oagweysnavqgcfsfawqwql2rwxend7xxpriq676lzsmtfwbt75qbqd.onion/v2/";
-    public static final String SAMOURAI_API2_TESTNET_TOR_DIST = "http://d2oagweysnavqgcfsfawqwql2rwxend7xxpriq676lzsmtfwbt75qbqd.onion/test/v2/";
+    public static final String SAMOURAI_API2_TOR_DIST = DexConfigProvider.getInstance().getSamouraiConfig().getBackendServerMainnetOnion() + '/';
+    public static final String SAMOURAI_API2_TESTNET_TOR_DIST = DexConfigProvider.getInstance().getSamouraiConfig().getBackendServerTestnetOnion() + '/';
 
     public static String SAMOURAI_API2_TOR = SAMOURAI_API2_TOR_DIST;
     public static String SAMOURAI_API2_TESTNET_TOR = SAMOURAI_API2_TESTNET_TOR_DIST;
