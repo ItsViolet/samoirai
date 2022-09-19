@@ -42,7 +42,6 @@ import static com.samourai.wallet.util.LogUtil.info;
 
 public class WebUtil {
 
-    public static final String SAMOURAI_API_CHECK = "https://api.samourai.com/v1/status";
     public static final String SAMOURAI_API2 = DexConfigProvider.getInstance().getSamouraiConfig().getBackendServerMainnetClear() + '/';
     public static final String SAMOURAI_API2_TESTNET = DexConfigProvider.getInstance().getSamouraiConfig().getBackendServerTestnetClear() + '/';
 
