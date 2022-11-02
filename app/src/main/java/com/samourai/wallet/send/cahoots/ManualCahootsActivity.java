@@ -22,6 +22,7 @@ import com.samourai.soroban.cahoots.TxBroadcastInteraction;
 import com.samourai.soroban.client.SorobanReply;
 import com.samourai.wallet.R;
 import com.samourai.wallet.SamouraiActivity;
+import com.samourai.wallet.TxAnimUIActivity;
 import com.samourai.wallet.cahoots.AndroidSorobanCahootsService;
 import com.samourai.wallet.cahoots.CahootsMode;
 import com.samourai.wallet.cahoots.CahootsType;
@@ -29,6 +30,7 @@ import com.samourai.wallet.cahoots.CahootsTypeUser;
 import com.samourai.wallet.cahoots.psbt.PSBT;
 import com.samourai.wallet.send.FeeUtil;
 import com.samourai.wallet.util.AppUtil;
+import com.samourai.wallet.util.PrefsUtil;
 import com.samourai.wallet.util.QRBottomSheetDialog;
 
 public class ManualCahootsActivity extends SamouraiActivity {
@@ -114,6 +116,7 @@ public class ManualCahootsActivity extends SamouraiActivity {
     private void startSender() throws Exception {
         long feePerB =   getIntent().getLongExtra("fees", FeeUtil.getInstance().getSuggestedFeeDefaultPerB()) ;
         long sendAmount = getIntent().getLongExtra("sendAmount", 0);
+        boolean rbfOptin = PrefsUtil.getInstance(ManualCahootsActivity.this).getValue(PrefsUtil.RBF_OPT_IN, false);
         if (sendAmount <= 0) {
             throw new Exception("Invalid sendAmount");
         }
@@ -123,7 +126,7 @@ public class ManualCahootsActivity extends SamouraiActivity {
         if(getIntent().hasExtra("destPcode")){
             paynymDestination = getIntent().getStringExtra("destPcode");
         }
-        cahootsContext = cahootsUi.computeCahootsContextInitiator(account, feePerB, sendAmount, sendAddress, paynymDestination);
+        cahootsContext = cahootsUi.computeCahootsContextInitiator(account, feePerB, sendAmount, sendAddress, paynymDestination, rbfOptin);
         cahootsUi.setCahootsMessage(manualCahootsService.initiate(cahootsContext));
     }
 
