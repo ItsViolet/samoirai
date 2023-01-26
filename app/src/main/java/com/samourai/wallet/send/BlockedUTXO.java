@@ -46,10 +46,20 @@ public class BlockedUTXO {
         return blockedUTXO.get(hash + "-" + Integer.toString(idx));
     }
 
+    public long get(String id)    {
+        return blockedUTXO.get(id);
+    }
+
     public void add(String hash, int idx, long value)    {
         blockedUTXO.put(hash + "-" + Integer.toString(idx), value);
         onUtxoChange();
         debug("BlockedUTXO", "add:" + hash + "-" + Integer.toString(idx));
+    }
+
+    public void add(String id, long value)    {
+        blockedUTXO.put(id, value);
+        onUtxoChange();
+        debug("BlockedUTXO", "add:" + id);
     }
 
     public void remove(String hash, int idx)   {
@@ -383,6 +393,20 @@ public class BlockedUTXO {
 
     public boolean containsAny(String hash, int idx) {
         return  this.contains(hash,idx) || this.containsPostMix(hash,idx) || this.containsBadBank(hash,idx);
+    }
+
+    public boolean containsAny(String id) {
+
+        if(id == null) {
+            return false;
+        }
+
+        String[] s = id.split("-");
+        if(s.length != 2) {
+            return false;
+        }
+
+        return this.contains(s[0], Integer.getInteger(s[1])) || this.containsPostMix(s[0], Integer.getInteger(s[1])) || this.containsBadBank(s[0], Integer.getInteger(s[1]));
     }
 
     private void onUtxoChange() {
