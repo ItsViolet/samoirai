@@ -1,11 +1,13 @@
 package com.samourai.wallet.utxos;
 
 import com.samourai.wallet.SamouraiWallet;
+import com.samourai.wallet.send.BlockedUTXO;
 import com.samourai.wallet.util.FormatsUtil;
 
 import org.bitcoinj.core.Address;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -255,6 +257,100 @@ public class UTXOUtil {
             return AddressTypes.SEGWIT_COMPAT;
         } else {
             return AddressTypes.LEGACY;
+        }
+    }
+
+    /*
+{ "type": "tx", "ref": "f91d0a8a78462bc59398f2c5d7a84fcff491c26ba54c4833478b202796c8aafd", "label": "Transaction" }
+{ "type": "addr", "ref": "bc1q34aq5drpuwy3wgl9lhup9892qp6svr8ldzyy7c", "label": "Address" }
+{ "type": "pubkey", "ref": "0283409659355b6d1cc3c32decd5d561abaac86c37a353b52895a5e6c196d6f448", "label": "Public Key" }
+{ "type": "input", "ref": "f91d0a8a78462bc59398f2c5d7a84fcff491c26ba54c4833478b202796c8aafd:0", "label": "Input" }
+{ "type": "output", "ref": "f91d0a8a78462bc59398f2c5d7a84fcff491c26ba54c4833478b202796c8aafd:1", "label": "Output" }
+{ "type": "xpub", "ref": "xpub661MyMwAqRbcFtXgS5sYJABqqG9YLmC4Q1Rdap9gSE8NqtwybGhePY2gZ29ESFjqJoCu1Rupje8YtGqsefD265TMg7usUDFdp6W1EGMcet8", "label": "Extended Public Key" }     */
+    public JSONArray toBIP329() {
+
+        JSONArray utxos = new JSONArray();
+
+        List<String> keys = new ArrayList<String>();
+        for (String key : utxoAutoTags.keySet()) {
+            keys.add(key);
+        }
+        for (String key : utxoNotes.keySet()) {
+            if(!keys.contains(key)) {
+                keys.add(key);
+            }
+        }
+
+        try {
+            for (String key : keys) {
+                JSONObject obj = new JSONObject();
+                obj.put("type", "output");
+                obj.put("ref", key.replace("-", ":"));
+                if(utxoAutoTags.containsKey(key)) {
+                    List<String> tags = utxoAutoTags.get(key);
+                    obj.put("label", utxoAutoTags.get(tags.get(0)));
+                    if(tags.size() > 1) {
+                        for(int i = 1; i < tags.size(); i++)    {
+                            JSONObject _obj = new JSONObject();
+                            _obj.put("type", "output");
+                            _obj.put("ref", key.replace("-", ":"));
+                            _obj.put("label", utxoAutoTags.get(tags.get(i)));
+                            utxos.put(_obj);
+                        }
+                    }
+                }
+                if(utxoNotes.containsKey(key)) {
+                    obj.put("note", utxoNotes.get(key));
+                }
+                if(BlockedUTXO.getInstance().containsAny(key)) {
+                    obj.put("blocked", BlockedUTXO.getInstance().get(key.replace("-", ":")));
+                }
+
+                utxos.put(obj);
+            }
+
+        } catch (JSONException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return utxos;
+    }
+
+    public void fromBIP329(JSONArray utxos) {
+
+        utxoAutoTags.clear();
+        utxoNotes.clear();
+
+        try {
+            for (int i = 0; i < utxos.length(); i++) {
+
+                JSONObject obj = (JSONObject) utxos.get(i);
+
+                String ref = null;
+                if(!obj.has("ref")) {
+                    continue;
+                }
+                else {
+                    ref = obj.getString("ref").replace(":", "-");
+                }
+
+                if(obj.has("label")) {
+                    if(!utxoAutoTags.containsKey(ref)) {
+                        List<String> tags = new ArrayList<String>();
+                        utxoAutoTags.put(ref, tags);
+                    }
+                    utxoAutoTags.get(ref).add(obj.getString("label"));
+                }
+                if(obj.has("note")) {
+                    utxoNotes.put(ref, obj.getString("note"));
+                }
+                if(obj.has("blocked") && obj.getLong("blocked") > 0L) {
+                    BlockedUTXO.getInstance().add(ref, obj.getLong("blocked"));
+                }
+
+            }
+        } catch (JSONException ex) {
+            throw new RuntimeException(ex);
         }
     }
 
