@@ -86,4 +86,11 @@
         android:title="Mock main-net fees"
         app:showAsAction="never" />
 
+    <item
+        android:id="@+id/action_import_batch"
+        android:orderInCategory="100"
+        android:visible="false"
+        android:title="@string/options_import_batch"
+        app:showAsAction="never" />
+
 </menu>

@@ -942,4 +942,6 @@
     <string name="enable_stealth_mode">Enable stealth mode</string>
     <string name="disable_stealth_mode">Disable stealth mode</string>
     <string name="instructions">Instructions</string>
+
+    <string name="options_import_batch">Import batch spend</string>
 </resources>

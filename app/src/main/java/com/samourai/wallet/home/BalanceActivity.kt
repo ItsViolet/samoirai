@@ -672,6 +672,7 @@ open class BalanceActivity : SamouraiActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.main, menu)
         if (BuildConfig.FLAVOR == "staging") menu.findItem(R.id.action_mock_fees).isVisible = true
+        if (BuildConfig.FLAVOR == "staging") menu.findItem(R.id.action_import_batch).isVisible = true
         menu.findItem(R.id.action_refresh).isVisible = false
         menu.findItem(R.id.action_share_receive).isVisible = false
         menu.findItem(R.id.action_ricochet).isVisible = false
@@ -707,6 +708,10 @@ open class BalanceActivity : SamouraiActivity() {
             refreshTx(false, true, false)
             binding.txSwipeContainer.isRefreshing = false
             showProgress()
+            return super.onOptionsItemSelected(item)
+        }
+        if (id == R.id.action_import_batch) {
+            startActivity(Intent(this, ImportBatchSpendActivity::class.java))
             return super.onOptionsItemSelected(item)
         }
         if (id == R.id.action_postmix_balance) {
