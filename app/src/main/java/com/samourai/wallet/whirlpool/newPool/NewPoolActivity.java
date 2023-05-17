@@ -1,28 +1,17 @@
 package com.samourai.wallet.whirlpool.newPool;
 
-import static android.graphics.Typeface.BOLD;
-
-import android.app.Activity;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -37,7 +26,6 @@ import com.samourai.wallet.util.LogUtil;
 import com.samourai.wallet.utxos.PreSelectUtil;
 import com.samourai.wallet.utxos.UTXOUtil;
 import com.samourai.wallet.utxos.models.UTXOCoin;
-import com.samourai.wallet.whirlpool.WhirlpoolHome;
 import com.samourai.wallet.whirlpool.WhirlpoolMeta;
 import com.samourai.wallet.whirlpool.WhirlpoolTx0;
 import com.samourai.wallet.whirlpool.models.PoolCyclePriority;
@@ -53,6 +41,8 @@ import com.samourai.whirlpool.client.wallet.WhirlpoolUtils;
 import com.samourai.whirlpool.client.wallet.WhirlpoolWallet;
 import com.samourai.whirlpool.client.wallet.beans.Tx0FeeTarget;
 import com.samourai.whirlpool.client.wallet.beans.WhirlpoolAccount;
+import com.samourai.whirlpool.client.wallet.data.pool.PoolSupplier;
+import com.samourai.whirlpool.client.whirlpool.beans.Pool;
 
 import org.bitcoinj.core.TransactionOutput;
 
@@ -61,14 +51,22 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.lifecycle.ViewModelProvider;
-
 import io.reactivex.Completable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+import java8.util.stream.Collectors;
+import java8.util.stream.StreamSupport;
 import kotlin.Unit;
+
+import static android.graphics.Typeface.BOLD;
 
 public class NewPoolActivity extends SamouraiActivity {
 
@@ -273,7 +271,7 @@ public class NewPoolActivity extends SamouraiActivity {
                 confirmButton.setEnabled(false);
                 Disposable tx0Disposable = beginTx0(selectedCoins)
                         .delay(500, TimeUnit.MILLISECONDS)
-                        .andThen(AndroidWhirlpoolWalletService.getInstance().getWhirlpoolWallet().get().refreshUtxosAsync())
+                        .andThen(AndroidWhirlpoolWalletService.getInstance().whirlpoolWallet().refreshUtxosAsync())
                         .delay(100,TimeUnit.MILLISECONDS)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
@@ -323,9 +321,12 @@ public class NewPoolActivity extends SamouraiActivity {
                 tx0Config.setChangeWallet(WhirlpoolAccount.DEPOSIT);
             }
             try {
-                com.samourai.whirlpool.client.whirlpool.beans.Pool pool = whirlpoolWallet.getPoolSupplier().findPoolById(newPoolViewModel.getGetPool().getValue().getPoolId());
+                // provide here the list of cascading pools
+                Collection<Pool> pools = findPoolsLowerOrEqual(newPoolViewModel.getGetPool().getValue().getPoolId(), whirlpoolWallet.getPoolSupplier());
 
-                Tx0 tx0 = whirlpoolWallet.tx0(spendFroms, tx0Config, pool);
+                // run TX0-CASCADE & broadcast - returns the list of Tx0s in cascading order
+                List<Tx0> tx0s = whirlpoolWallet.tx0Cascade(spendFroms, tx0Config, pools);
+                Tx0 tx0 = tx0s.get(0);
                 final String txHash = tx0.getTx().getHashAsString();
                 // tx0 success
                 if (tx0.getChangeOutputs() != null && !tx0.getChangeOutputs().isEmpty()) {
@@ -353,6 +354,13 @@ public class NewPoolActivity extends SamouraiActivity {
 
             return true;
         });
+    }
+
+    private Collection<Pool> findPoolsLowerOrEqual(String maxPoolId, PoolSupplier poolSupplier) {
+        Pool highestPool = poolSupplier.findPoolById(maxPoolId);
+        return StreamSupport.stream(poolSupplier.getPools())
+                .filter(pool -> pool.getDenomination() <= highestPool.getDenomination())
+                .collect(Collectors.toList());
     }
 
     @Override
