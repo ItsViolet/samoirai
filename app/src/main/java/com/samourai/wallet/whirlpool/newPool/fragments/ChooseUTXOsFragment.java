@@ -238,12 +238,13 @@ public class ChooseUTXOsFragment extends Fragment {
             ArrayList<UTXOCoin> items = new ArrayList<>();
             for (UTXO utxo : utxos) {
                 for (MyTransactionOutPoint outpoint : utxo.getOutpoints()) {
-                    UTXOCoin displayData = new UTXOCoin(outpoint, utxo);
+                    int account;
                     if (account0.contains(utxo)) {
-                        displayData.account = 0;
+                        account = 0;
                     } else {
-                        displayData.account = WhirlpoolMeta.getInstance(getActivity()).getWhirlpoolPostmix();
+                        account = WhirlpoolMeta.getInstance(getActivity()).getWhirlpoolPostmix();
                     }
+                    UTXOCoin displayData = new UTXOCoin(outpoint, utxo, account);
                     items.add(displayData);
                 }
 

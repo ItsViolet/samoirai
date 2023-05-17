@@ -16,7 +16,7 @@ public class UTXOCoinSegment extends UTXOCoin {
     //for whirlpool utxo list
     public boolean unCycled = false;
 
-    public UTXOCoinSegment(MyTransactionOutPoint outPoint, UTXO utxo) {
-        super(outPoint, utxo);
+    public UTXOCoinSegment(MyTransactionOutPoint outPoint, UTXO utxo, int account) {
+        super(outPoint, utxo, account);
     }
 }

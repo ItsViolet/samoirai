@@ -1,10 +1,12 @@
 package com.samourai.wallet.utxos.models;
 
-import androidx.annotation.Nullable;
-
+import com.samourai.wallet.api.backend.beans.UnspentOutput;
 import com.samourai.wallet.send.BlockedUTXO;
 import com.samourai.wallet.send.MyTransactionOutPoint;
 import com.samourai.wallet.send.UTXO;
+import com.samourai.wallet.util.AddressFactory;
+
+import androidx.annotation.Nullable;
 
 /**
  * UTXO model for UI
@@ -27,7 +29,7 @@ public class UTXOCoin {
     }
 
 
-    public UTXOCoin(MyTransactionOutPoint outPoint, UTXO utxo) {
+    public UTXOCoin(MyTransactionOutPoint outPoint, UTXO utxo, int account) {
         if (outPoint == null || utxo == null) {
             return;
         }
@@ -37,10 +39,17 @@ public class UTXOCoin {
         this.amount = outPoint.getValue().longValue();
         this.hash = outPoint.getTxHash().toString();
         this.idx = outPoint.getTxOutputN();
+        this.account = account;
     }
 
     public boolean isBlocked(){
         return BlockedUTXO.getInstance().containsAny(this.hash,this.idx);
+    }
+
+    public UnspentOutput toUnspentOutput() {
+        String pubkey = null; // TODO
+        String xpub = AddressFactory.getInstance().account2xpub().get(account);
+        return new UnspentOutput(outPoint, pubkey, path, xpub);
     }
 
     @Override

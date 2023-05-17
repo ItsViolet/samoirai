@@ -144,7 +144,7 @@ public class UTXODetailsActivity extends SamouraiActivity {
                         amount = outpoint.getValue().longValue();
                         hash = outpoint.getTxHash().toString();
                         addr = outpoint.getAddress();
-                        utxoCoin = new UTXOCoin(outpoint, utxo);
+                        utxoCoin = new UTXOCoin(outpoint, utxo, account);
                         setUTXOState();
                     }
                 }

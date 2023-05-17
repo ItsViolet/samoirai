@@ -86,7 +86,7 @@ class NewPoolViewModel : ViewModel() {
                 val tx0 = WhirlpoolTx0(WhirlpoolMeta.getMinimumPoolDenomination(), fee.toLong(), 0, utxos.value)
 
                 val spendFroms: MutableCollection<UnspentOutput> =
-                        WhirlpoolUtils.getInstance().toUnspentOutputs(tx0.outpoints)
+                        WhirlpoolUtils.getInstance().toUnspentOutputsCoins(utxos.value)
 
                 val poolModels = ArrayList<PoolViewModel>();
 

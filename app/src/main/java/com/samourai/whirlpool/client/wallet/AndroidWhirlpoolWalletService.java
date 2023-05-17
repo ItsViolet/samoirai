@@ -161,12 +161,7 @@ public class AndroidWhirlpoolWalletService extends WhirlpoolWalletService {
         whirlpoolWalletConfig.setBip47Util(BIP47Util.getInstance(ctx));
         whirlpoolWalletConfig.setDataPersisterFactory(dataPersisterFactory);
 
-        whirlpoolWalletConfig.setAutoTx0PoolId(null); // disable auto-tx0
-        whirlpoolWalletConfig.setAutoMix(true); // enable auto-mix
-
         whirlpoolWalletConfig.setScode(scode);
-        whirlpoolWalletConfig.setMaxClients(1);
-        whirlpoolWalletConfig.setLiquidityClient(false); // disable concurrent liquidity thread
 
         for (Map.Entry<String,String> configEntry : whirlpoolWalletConfig.getConfigInfo().entrySet()) {
             Log.v(TAG, "whirlpoolWalletConfig["+configEntry.getKey()+"] = "+configEntry.getValue());
