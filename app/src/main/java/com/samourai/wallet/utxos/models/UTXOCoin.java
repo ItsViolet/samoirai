@@ -1,10 +1,21 @@
 package com.samourai.wallet.utxos.models;
 
 import com.samourai.wallet.api.backend.beans.UnspentOutput;
+import com.samourai.wallet.bipFormat.BIP_FORMAT;
+import com.samourai.wallet.bipFormat.BipFormat;
+import com.samourai.wallet.bipWallet.BipWallet;
+import com.samourai.wallet.bipWallet.WalletSupplier;
 import com.samourai.wallet.send.BlockedUTXO;
 import com.samourai.wallet.send.MyTransactionOutPoint;
 import com.samourai.wallet.send.UTXO;
 import com.samourai.wallet.util.AddressFactory;
+import com.samourai.whirlpool.client.wallet.beans.SamouraiAccountIndex;
+import com.samourai.whirlpool.client.wallet.beans.WhirlpoolAccount;
+
+import org.bitcoinj.core.NetworkParameters;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import androidx.annotation.Nullable;
 
@@ -20,6 +31,7 @@ public class UTXOCoin {
     public long amount = 0L;
     public String hash = "";
     public String path = "";
+    public String xpub = "";
     public int idx = 0;
     public boolean isSelected = false;
     private MyTransactionOutPoint outPoint;
@@ -36,6 +48,7 @@ public class UTXOCoin {
         this.outPoint = outPoint;
         this.address = outPoint.getAddress();
         this.path = utxo.getPath() == null ? "" : utxo.getPath();
+        this.xpub = utxo.getXpub() == null ? "" : utxo.getXpub();
         this.amount = outPoint.getValue().longValue();
         this.hash = outPoint.getTxHash().toString();
         this.idx = outPoint.getTxOutputN();
@@ -47,9 +60,13 @@ public class UTXOCoin {
     }
 
     public UnspentOutput toUnspentOutput() {
-        String pubkey = null; // TODO
-        String xpub = AddressFactory.getInstance().account2xpub().get(account);
-        return new UnspentOutput(outPoint, pubkey, path, xpub);
+        return new UnspentOutput(outPoint, path, xpub);
+    }
+
+    public UTXO toUTXO() {
+        List<MyTransactionOutPoint> outs = new ArrayList<>();
+        outs.add(outPoint);
+        return new UTXO(outs, path, xpub);
     }
 
     @Override

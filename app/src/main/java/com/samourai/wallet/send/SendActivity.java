@@ -1167,10 +1167,7 @@ public class SendActivity extends SamouraiActivity {
 //            List<UTXO> utxos = preselectedUTXOs;
                 // sort in descending order by value
                 for (UTXOCoin utxoCoin : preselectedUTXOs) {
-                    UTXO u = new UTXO();
-                    List<MyTransactionOutPoint> outs = new ArrayList<MyTransactionOutPoint>();
-                    outs.add(utxoCoin.getOutPoint());
-                    u.setOutpoints(outs);
+                    UTXO u = utxoCoin.toUTXO();
                     utxos.add(u);
                 }
             } else {

@@ -84,7 +84,7 @@ public class WebUtil {
         if (context == null) {
             return postURL(null, request, urlParameters, headers);
         } else {
-            Log.v("WebUtil", "Tor required status:" + TorManager.INSTANCE.isRequired());
+            // Log.v("WebUtil", "Tor required status:" + TorManager.INSTANCE.isRequired());
             if (TorManager.INSTANCE.isRequired()) {
                 if (urlParameters.startsWith("tx=")) {
                     HashMap<String, String> args = new HashMap<String, String>();
@@ -236,7 +236,7 @@ public class WebUtil {
             return _getURL(URL, headers);
         } else {
             //if(TorUtil.getInstance(context).orbotIsRunning())    {
-            Log.v("WebUtil", "Tor required status:" + TorManager.INSTANCE.isRequired());
+            // Log.v("WebUtil", "Tor required status:" + TorManager.INSTANCE.isRequired());
             if (TorManager.INSTANCE.isRequired()) {
                 return tor_getURL(URL, headers);
             } else {

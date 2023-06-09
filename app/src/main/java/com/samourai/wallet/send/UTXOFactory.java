@@ -124,8 +124,7 @@ public class UTXOFactory {
                 utxos = new ArrayList<>();
                 //Filtering out do not spends
                 for (UTXO item : postmix) {
-                    UTXO u = new UTXO();
-                    u.setPath(item.getPath());
+                    UTXO u = new UTXO(item.getPath(), item.getXpub());
                     for (MyTransactionOutPoint out : item.getOutpoints()) {
                         if (!BlockedUTXO.getInstance().contains(out.getTxHash().toString(), out.getTxOutputN())) {
                             u.getOutpoints().add(out);

@@ -47,6 +47,7 @@ import com.samourai.wallet.utxos.UTXOUtil;
 import com.samourai.wallet.whirlpool.WhirlpoolMeta;
 import com.samourai.whirlpool.client.wallet.WhirlpoolUtils;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.AddressFormatException;
@@ -1270,6 +1271,7 @@ public class APIFactory {
                     byte[] scriptBytes = Hex.decode(script);
                     int confirmations = ((Number)outDict.get("confirmations")).intValue();
                     String path = null;
+                    String m = null;
 
                     try {
                         String address = null;
@@ -1283,7 +1285,7 @@ public class APIFactory {
                         if(outDict.has("xpub"))    {
                             JSONObject xpubObj = (JSONObject)outDict.get("xpub");
                             path = (String)xpubObj.get("path");
-                            String m = (String)xpubObj.get("m");
+                            m = (String)xpubObj.get("m");
                             unspentPaths.put(address, path);
                             if(m.equals(BIP49Util.getInstance(context).getWallet().getAccount(0).xpubstr()))    {
                                 unspentBIP49.put(address, 0);   // assume account 0
@@ -1315,9 +1317,8 @@ public class APIFactory {
                             utxos.get(script).getOutpoints().add(outPoint);
                         }
                         else    {
-                            UTXO utxo = new UTXO();
+                            UTXO utxo = new UTXO(path, m);
                             utxo.getOutpoints().add(outPoint);
-                            utxo.setPath(path);
                             utxos.put(script, utxo);
                         }
 
@@ -1975,13 +1976,11 @@ public class APIFactory {
 
         if(filter)    {
             for(UTXO utxo : utxos)   {
-                UTXO u = new UTXO();
-                u.setPath(utxo.getPath());
+                UTXO u = new UTXO(utxo.getPath(), utxo.getXpub());
                 for(MyTransactionOutPoint out : utxo.getOutpoints())    {
                     boolean blocked = checkBlocked.apply(out);
                     if(!blocked)    {
                         u.getOutpoints().add(out);
-                        u.setPath(utxo.getPath());
                     }
                 }
                 if(u.getOutpoints().size() > 0)    {
@@ -2395,6 +2394,7 @@ public class APIFactory {
                     byte[] scriptBytes = Hex.decode(script);
                     int confirmations = ((Number)outDict.get("confirmations")).intValue();
                     String path = null;
+                    String m = null;
 
                     try {
                         String address = outDict.getString("addr");
@@ -2402,7 +2402,7 @@ public class APIFactory {
                         if(outDict.has("xpub"))    {
                             JSONObject xpubObj = (JSONObject)outDict.get("xpub");
                             path = (String)xpubObj.get("path");
-                            String m = (String)xpubObj.get("m");
+                            m = (String)xpubObj.get("m");
 
                             unspentPaths.put(address, path);
                             if(m.equals(BIP84Util.getInstance(context).getWallet().getAccount(WhirlpoolMeta.getInstance(context).getWhirlpoolPostmix()).xpubstr()))    {
@@ -2433,9 +2433,8 @@ public class APIFactory {
                                 utxosPostMix.get(script).getOutpoints().add(outPoint);
                             }
                             else    {
-                                UTXO utxo = new UTXO();
+                                UTXO utxo = new UTXO(path, m);
                                 utxo.getOutpoints().add(outPoint);
-                                utxo.setPath(path);
                                 utxosPostMix.put(script, utxo);
                             }
                         }
@@ -2444,9 +2443,8 @@ public class APIFactory {
                                 utxosPreMix.get(script).getOutpoints().add(outPoint);
                             }
                             else    {
-                                UTXO utxo = new UTXO();
+                                UTXO utxo = new UTXO(path, m);
                                 utxo.getOutpoints().add(outPoint);
-                                utxo.setPath(path);
                                 utxosPreMix.put(script, utxo);
                             }
                         } if(account_type == XPUB_BADBANK)    {
@@ -2454,9 +2452,8 @@ public class APIFactory {
                                 utxosBadBank.get(script).getOutpoints().add(outPoint);
                             }
                             else    {
-                                UTXO utxo = new UTXO();
+                                UTXO utxo = new UTXO(path, m);
                                 utxo.getOutpoints().add(outPoint);
-                                utxo.setPath(path);
                                 utxosBadBank.put(script, utxo);
                             }
                         }

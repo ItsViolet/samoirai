@@ -47,6 +47,7 @@ import com.samourai.whirlpool.client.whirlpool.beans.Pool;
 import org.bitcoinj.core.TransactionOutput;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -321,31 +322,41 @@ public class NewPoolActivity extends SamouraiActivity {
                 tx0Config.setChangeWallet(WhirlpoolAccount.DEPOSIT);
             }
             try {
-                // provide here the list of cascading pools
-                Collection<Pool> pools = findPoolsLowerOrEqual(newPoolViewModel.getGetPool().getValue().getPoolId(), whirlpoolWallet.getPoolSupplier());
+                Pool selectedPool = newPoolViewModel.getGetPool().getValue();
+
+                //// run TX0 & broadcast
+                //Tx0 tx0 = whirlpoolWallet.tx0(spendFroms, tx0Config, selectedPool);
+
+                // TODO make cascading pools selectable from UI
+                Collection<Pool> pools = whirlpoolWallet.getPoolSupplier().findPoolsByMaxId(selectedPool.getPoolId());
+                LogUtil.info("NewPoolActivity", "tx0Cascade: pools=" + Arrays.toString(StreamSupport.stream(pools).map(p -> p.getPoolId()).toArray()));
 
                 // run TX0-CASCADE & broadcast - returns the list of Tx0s in cascading order
                 List<Tx0> tx0s = whirlpoolWallet.tx0Cascade(spendFroms, tx0Config, pools);
-                Tx0 tx0 = tx0s.get(0);
-                final String txHash = tx0.getTx().getHashAsString();
+
                 // tx0 success
-                if (tx0.getChangeOutputs() != null && !tx0.getChangeOutputs().isEmpty()) {
-                    TransactionOutput changeOutput = tx0.getChangeOutputs().iterator().next();
-                    LogUtil.info("NewPoolActivity", "change:" + changeOutput.toString());
-                    LogUtil.info("NewPoolActivity", "change index:" + changeOutput.getIndex());
-                    UTXOUtil.getInstance().add(txHash + "-" + changeOutput.getIndex(), "\u2623 tx0 change\u2623");
-                    UTXOUtil.getInstance().addNote(txHash, "tx0");
-                    if (blockChangeOutput) {
-                        if (account == WhirlpoolMeta.getInstance(getApplicationContext()).getWhirlpoolPostmix()) {
-                            BlockedUTXO.getInstance().addPostMix(txHash, changeOutput.getIndex(), tx0.getChangeValue());
-                        } else {
-                            BlockedUTXO.getInstance().add(txHash, changeOutput.getIndex(), tx0.getChangeValue());
+                for (Tx0 tx0 : tx0s) {
+                    final String txHash = tx0.getTx().getHashAsString();
+                    if (tx0.getChangeOutputs() != null && !tx0.getChangeOutputs().isEmpty()) {
+                        // mark tx0 changes
+                        TransactionOutput changeOutput = tx0.getChangeOutputs().iterator().next();
+                        LogUtil.info("NewPoolActivity", "change:" + changeOutput.toString());
+                        LogUtil.info("NewPoolActivity", "change index:" + changeOutput.getIndex());
+                        UTXOUtil.getInstance().add(txHash + "-" + changeOutput.getIndex(), "\u2623 tx0 change\u2623");
+                        UTXOUtil.getInstance().addNote(txHash, "tx0");
+
+                        // block toxic changes
+                        if (blockChangeOutput) {
+                            if (account == WhirlpoolMeta.getInstance(getApplicationContext()).getWhirlpoolPostmix()) {
+                                BlockedUTXO.getInstance().addPostMix(txHash, changeOutput.getIndex(), tx0.getChangeValue());
+                            } else {
+                                BlockedUTXO.getInstance().add(txHash, changeOutput.getIndex(), tx0.getChangeValue());
+                            }
                         }
                     }
+                    NewPoolActivity.this.runOnUiThread(() -> Toast.makeText(NewPoolActivity.this, txHash, Toast.LENGTH_SHORT).show());
+                    LogUtil.info("NewPoolActivity", "result:" + txHash);
                 }
-
-                NewPoolActivity.this.runOnUiThread(() -> Toast.makeText(NewPoolActivity.this, txHash, Toast.LENGTH_SHORT).show());
-                LogUtil.info("NewPoolActivity", "result:" + txHash);
 
             } catch (Exception e) {
                 // tx0 failed
@@ -354,13 +365,6 @@ public class NewPoolActivity extends SamouraiActivity {
 
             return true;
         });
-    }
-
-    private Collection<Pool> findPoolsLowerOrEqual(String maxPoolId, PoolSupplier poolSupplier) {
-        Pool highestPool = poolSupplier.findPoolById(maxPoolId);
-        return StreamSupport.stream(poolSupplier.getPools())
-                .filter(pool -> pool.getDenomination() <= highestPool.getDenomination())
-                .collect(Collectors.toList());
     }
 
     @Override

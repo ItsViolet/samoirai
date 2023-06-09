@@ -92,18 +92,12 @@ public class AndroidUtxoSupplier extends BasicUtxoSupplier {
     private Collection<UnspentOutput> toUnspentOutputs(Collection<UTXO> utxos, BIP_WALLET bip_wallet) {
         List<UnspentOutput> unspentOutputs = new LinkedList<>();
 
-        BipWallet bipWallet = getWalletSupplier().getWallet(bip_wallet);
-        if (bipWallet == null) {
-            log.error("Wallet not found for "+bip_wallet.name());
-            return unspentOutputs;
-        }
-        String xpub = bipWallet.getPub();
         for (UTXO utxo : utxos) {
-            Collection<UnspentOutput> unspents = utxo.toUnspentOutputs(xpub);
+            Collection<UnspentOutput> unspents = utxo.toUnspentOutputs();
             unspentOutputs.addAll(unspents);
         }
         if (log.isDebugEnabled()) {
-            log.debug("set utxos["+bipWallet.getId()+"] = "+utxos.size()+" UTXO = "+unspentOutputs.size()+" unspentOutputs");
+            log.debug("set utxos["+bip_wallet.name()+"] = "+utxos.size()+" UTXO = "+unspentOutputs.size()+" unspentOutputs");
         }
         return unspentOutputs;
     }
