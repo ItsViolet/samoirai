@@ -167,7 +167,7 @@ fun SignSuccess() {
                                 view.setContent(
                                 UR.fromBytes(
                                     RegistryType.BYTES.type,
-                                    Hex.decode(String(Hex.encode(transaction?.bitcoinSerialize())))
+                                    Hex.decode(String(Hex.encode(transaction?.bitcoinSerialize())).uppercase())
                                 )
                             )
                         }
