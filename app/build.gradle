@@ -13,17 +13,17 @@ android {
         versionCode 198
         versionName "0.99.98i"
         // Enabling multidex support.
-        multiDexEnabled true
+        //multiDexEnabled true
         vectorDrawables {
             useSupportLibrary true
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = JavaVersion.VERSION_17
     }
     buildTypes {
         release {
