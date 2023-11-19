@@ -14,9 +14,9 @@ android {
         versionName "0.99.98i"
         // Enabling multidex support.
         //multiDexEnabled true
-        vectorDrawables {
-            useSupportLibrary true
-        }
+//        vectorDrawables {
+//            useSupportLibrary true
+//        }
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
