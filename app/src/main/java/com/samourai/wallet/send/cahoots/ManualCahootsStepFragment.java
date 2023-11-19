@@ -10,7 +10,6 @@ import com.google.android.material.button.MaterialButton;
 import com.samourai.wallet.R;
 import com.samourai.wallet.fragments.CameraFragmentBottomSheet;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 public class ManualCahootsStepFragment extends AbstractCahootsStepFragment {
@@ -53,7 +52,7 @@ public class ManualCahootsStepFragment extends AbstractCahootsStepFragment {
     }
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.cahoots_step_view, container, false);
     }

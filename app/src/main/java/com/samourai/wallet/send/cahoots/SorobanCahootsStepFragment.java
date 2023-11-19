@@ -8,7 +8,6 @@ import android.widget.TextView;
 
 import com.samourai.wallet.R;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 public class SorobanCahootsStepFragment extends AbstractCahootsStepFragment {
@@ -21,7 +20,7 @@ public class SorobanCahootsStepFragment extends AbstractCahootsStepFragment {
     }
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.cahoots_step_view_soroban, container, false);
     }

@@ -12,7 +12,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.AsyncListDiffer;
 import androidx.recyclerview.widget.DiffUtil;
@@ -77,14 +76,14 @@ public class TxAdapter extends RecyclerView.Adapter<TxAdapter.TxViewHolder> {
     }
 
     @Override
-    public void onDetachedFromRecyclerView(@NonNull RecyclerView recyclerView) {
+    public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
         disposables.dispose();
         super.onDetachedFromRecyclerView(recyclerView);
     }
 
-    @NonNull
+    
     @Override
-    public TxViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public TxViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = null;
         if (viewType == VIEW_ITEM) {
             view = LayoutInflater.from(parent.getContext())
@@ -99,7 +98,7 @@ public class TxAdapter extends RecyclerView.Adapter<TxAdapter.TxViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(@NonNull TxViewHolder holder, int position) {
+    public void onBindViewHolder(TxViewHolder holder, int position) {
         boolean is_sat_prefs = PrefsUtil.getInstance(this.mContext).getValue(PrefsUtil.IS_SAT, false);
 
         Tx tx = mDiffer.getCurrentList().get(position);
@@ -220,12 +219,12 @@ public class TxAdapter extends RecyclerView.Adapter<TxAdapter.TxViewHolder> {
     public static final DiffUtil.ItemCallback<Tx> DIFF_CALLBACK
             = new DiffUtil.ItemCallback<Tx>() {
         @Override
-        public boolean areItemsTheSame(@NonNull Tx oldItem, @NonNull Tx newItem) {
+        public boolean areItemsTheSame(Tx oldItem, Tx newItem) {
             return oldItem.getTS() == newItem.getTS();
         }
 
         @Override
-        public boolean areContentsTheSame(@NonNull Tx oldItem, @NonNull Tx newItem) {
+        public boolean areContentsTheSame(Tx oldItem, Tx newItem) {
             if (oldItem.section != null || newItem.section != null) {
                 return true;
             }

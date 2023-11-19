@@ -1,6 +1,5 @@
 package com.samourai.stomp.client;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import android.util.Log;
 
@@ -32,7 +31,7 @@ public class AndroidWebSocketsConnectionProvider extends AbstractConnectionProvi
     private static final String TAG = AndroidWebSocketsConnectionProvider.class.getSimpleName();
 
     private final String mUri;
-    @NonNull
+    
     private final Map<String, String> mConnectHttpHeaders;
 
     private WebSocketClient mWebSocketClient;
@@ -67,7 +66,7 @@ public class AndroidWebSocketsConnectionProvider extends AbstractConnectionProvi
         mWebSocketClient = new WebSocketClient(URI.create(mUri), new Draft_6455(), mConnectHttpHeaders, 0) {
 
             @Override
-            public void onWebsocketHandshakeReceivedAsClient(WebSocket conn, ClientHandshake request, @NonNull ServerHandshake response) throws InvalidDataException {
+            public void onWebsocketHandshakeReceivedAsClient(WebSocket conn, ClientHandshake request, ServerHandshake response) throws InvalidDataException {
                 Log.v(TAG, "onWebsocketHandshakeReceivedAsClient with response: " + response.getHttpStatus() + " " + response.getHttpStatusMessage());
                 mServerHandshakeHeaders = new TreeMap<>();
                 Iterator<String> keys = response.iterateHttpFields();
@@ -78,7 +77,7 @@ public class AndroidWebSocketsConnectionProvider extends AbstractConnectionProvi
             }
 
             @Override
-            public void onOpen(@NonNull ServerHandshake handshakeData) {
+            public void onOpen(ServerHandshake handshakeData) {
                 Log.v(TAG, "onOpen with handshakeData: " + handshakeData.getHttpStatus() + " " + handshakeData.getHttpStatusMessage());
                 LifecycleEvent openEvent = new LifecycleEvent(LifecycleEvent.Type.OPENED);
                 openEvent.setHandshakeResponseHeaders(mServerHandshakeHeaders);

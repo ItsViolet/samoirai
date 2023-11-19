@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.transition.Fade;
@@ -41,17 +40,17 @@ public class SendTransactionDetailsView extends FrameLayout {
     private View dividerMethod;
 
 
-    public SendTransactionDetailsView(@NonNull Context context) {
+    public SendTransactionDetailsView(Context context) {
         super(context);
         init();
     }
 
-    public SendTransactionDetailsView(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public SendTransactionDetailsView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
-    public SendTransactionDetailsView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public SendTransactionDetailsView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
     }

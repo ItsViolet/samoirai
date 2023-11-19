@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
@@ -48,7 +47,7 @@ public class PinChangeDialog extends BottomSheetDialogFragment
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater,
+    public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
@@ -113,7 +112,7 @@ public class PinChangeDialog extends BottomSheetDialogFragment
     }
 
     @Override
-    public void onDismiss(@NonNull DialogInterface dialog) {
+    public void onDismiss(DialogInterface dialog) {
         super.onDismiss(dialog);
 
         if (getActivity() != null) {
@@ -122,7 +121,7 @@ public class PinChangeDialog extends BottomSheetDialogFragment
     }
 
     @Override
-    public void onCancel(@NonNull DialogInterface dialog) {
+    public void onCancel(DialogInterface dialog) {
         super.onCancel(dialog);
 
         if (getActivity() != null) {

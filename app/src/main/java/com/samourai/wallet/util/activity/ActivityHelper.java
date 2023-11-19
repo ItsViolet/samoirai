@@ -13,7 +13,6 @@ import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 
 import com.samourai.wallet.R;
 import com.samourai.wallet.explorer.ExplorerActivity;
@@ -33,7 +32,6 @@ public class ActivityHelper {
         activity.startActivity(explorerIntent);
     }
 
-    @NonNull
     private static String getSupportHttpUrl(boolean connectedOnTor) {
         if (connectedOnTor) {
             return "http://72typmu5edrjmcdkzuzmv2i4zqru7rjlrcxwtod4nu6qtfsqegngzead.onion/support";

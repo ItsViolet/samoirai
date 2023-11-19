@@ -24,7 +24,6 @@ import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
 import androidx.appcompat.view.ActionMode;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
@@ -1117,12 +1116,12 @@ public class UTXOSActivity extends SamouraiActivity implements ActionMode.Callba
             = new DiffUtil.ItemCallback<UTXOCoin>() {
 
         @Override
-        public boolean areItemsTheSame(@NonNull UTXOCoin oldItem, @NonNull UTXOCoin newItem) {
+        public boolean areItemsTheSame(UTXOCoin oldItem, UTXOCoin newItem) {
             return oldItem.id == newItem.id;
         }
 
         @Override
-        public boolean areContentsTheSame(@NonNull UTXOCoin oldItem, @NonNull UTXOCoin newItem) {
+        public boolean areContentsTheSame(UTXOCoin oldItem, UTXOCoin newItem) {
             return oldItem.equals(newItem);
         }
     };

@@ -2,7 +2,6 @@ package com.samourai.wallet.whirlpool.adapters;
 
 import android.content.Context;
 
-import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.Group;
 import androidx.recyclerview.widget.AsyncListDiffer;
 import androidx.recyclerview.widget.DiffUtil;
@@ -124,12 +123,12 @@ public class PoolsAdapter extends RecyclerView.Adapter<PoolsAdapter.ViewHolder> 
     public static final DiffUtil.ItemCallback<PoolViewModel> DIFF_CALLBACK
             = new DiffUtil.ItemCallback<PoolViewModel>() {
         @Override
-        public boolean areItemsTheSame(@NonNull PoolViewModel oldItem, @NonNull PoolViewModel newItem) {
+        public boolean areItemsTheSame(PoolViewModel oldItem, PoolViewModel newItem) {
             return oldItem.getPoolId().equals(newItem.getPoolId());
         }
 
         @Override
-        public boolean areContentsTheSame(@NonNull PoolViewModel oldItem, @NonNull PoolViewModel newItem) {
+        public boolean areContentsTheSame(PoolViewModel oldItem, PoolViewModel newItem) {
             return false;
         }
 

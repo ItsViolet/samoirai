@@ -13,7 +13,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.samourai.wallet.R;
@@ -26,22 +25,22 @@ public class BroadcastManuallyView extends FrameLayout {
     private ImageView transactionImageView;
     private ImageButton leftTopImgBtn, copyBtn;
 
-    public BroadcastManuallyView(@NonNull Context context) {
+    public BroadcastManuallyView(Context context) {
         super(context);
         init();
     }
 
-    public BroadcastManuallyView(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public BroadcastManuallyView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
-    public BroadcastManuallyView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public BroadcastManuallyView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
     }
 
-    public BroadcastManuallyView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public BroadcastManuallyView(Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         init();
     }

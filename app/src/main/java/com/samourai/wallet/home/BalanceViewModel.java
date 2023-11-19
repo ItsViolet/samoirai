@@ -11,8 +11,6 @@ import android.content.SharedPreferences;
 import android.util.Log;
 import android.util.Pair;
 
-import androidx.annotation.NonNull;
-
 import com.samourai.wallet.api.APIFactory;
 import com.samourai.wallet.api.Tx;
 import com.samourai.wallet.bip47.BIP47Meta;
@@ -62,7 +60,7 @@ public class BalanceViewModel extends AndroidViewModel {
     private MutableLiveData<Boolean> toggleSat = new MutableLiveData<>();
     private CompositeDisposable compositeDisposables = new CompositeDisposable();
 
-    public BalanceViewModel(@NonNull Application application) {
+    public BalanceViewModel(Application application) {
         super(application);
         boolean is_sat_prefs = PrefsUtil.getInstance(this.mContext).getValue(PrefsUtil.IS_SAT, true);
         toggleSat.setValue(is_sat_prefs);

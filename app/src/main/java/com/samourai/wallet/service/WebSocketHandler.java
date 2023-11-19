@@ -27,7 +27,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import okhttp3.OkHttpClient;
@@ -177,14 +176,14 @@ public class WebSocketHandler {
         return new WebSocketListener() {
 
             @Override
-            public void onOpen(@NonNull WebSocket webSocket, @NonNull Response response) {
+            public void onOpen(WebSocket webSocket, Response response) {
                 debug("WebSocketHandler", "onOpen: "+response);
                 webSocketConnected = true;
                 subscribe();
             }
 
             @Override
-            public void onFailure(@NonNull WebSocket webSocket, @NonNull Throwable t, @Nullable Response response) {
+            public void onFailure(WebSocket webSocket, Throwable t, @Nullable Response response) {
                 error("WebSocketHandler", "onFailure: "+response);
                 error("WebSocketHandler", t);
                 webSocketConnected = false;
@@ -192,13 +191,13 @@ public class WebSocketHandler {
             }
 
             @Override
-            public void onClosed(@NonNull WebSocket webSocket, int code, @NonNull String reason) {
+            public void onClosed(WebSocket webSocket, int code, String reason) {
                 debug("WebSocketHandler", "onClosed: code="+code+" "+reason);
                 webSocketConnected = false;
             }
 
             @Override
-            public void onMessage(@NonNull WebSocket webSocket, @NonNull String message) {
+            public void onMessage(WebSocket webSocket, String message) {
                 debug("WebSocketHandler", "onTextMessage: "+message);
                 try {
                     JSONObject jsonObject = null;

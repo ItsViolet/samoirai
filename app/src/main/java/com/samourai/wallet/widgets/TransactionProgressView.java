@@ -15,7 +15,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.samourai.wallet.R;
@@ -33,25 +32,25 @@ public class TransactionProgressView extends FrameLayout {
     private ProgressBar optionProgressBar;
     private Theme theme;
 
-    public TransactionProgressView(@NonNull Context context) {
+    public TransactionProgressView(Context context) {
         super(context);
         init();
 
     }
 
-    public TransactionProgressView(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public TransactionProgressView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         init();
 
     }
 
-    public TransactionProgressView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public TransactionProgressView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
 
     }
 
-    public TransactionProgressView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public TransactionProgressView(Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         init();
     }
